@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание Карточки</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Left Panel - Controls -->
+        <div class="controls-panel">
+            <h1>Генератор Карточек</h1>
+            
+            <div class="control-section">
+                <div class="photo-upload">
+                    <label>Фото корабля (главное):</label>
+                    <input type="file" id="photoUpload" accept="image/*">
+                    <span id="photoStatus">Не выбрано</span>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="photo-upload">
+                    <label>Изображение 1 (правое Большое):</label>
+                    <input type="file" id="photo1Upload" accept="image/*">
+                    <span id="photo1Status">Не выбрано</span>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="photo-upload">
+                    <label>Изображение 2 (правое маленькое 1):</label>
+                    <input type="file" id="photo2Upload" accept="image/*">
+                    <span id="photo2Status">Не выбрано</span>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="photo-upload">
+                    <label>Изображение 3 (правое маленькое 2):</label>
+                    <input type="file" id="photo3Upload" accept="image/*">
+                    <span id="photo3Status">Не выбрано</span>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="photo-upload">
+                    <label>Изображение 4 (нижний ряд 1):</label>
+                    <input type="file" id="photo4Upload" accept="image/*">
+                    <span id="photo4Status">Не выбрано</span>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="photo-upload">
+                    <label>Изображение 5 (нижний ряд 2):</label>
+                    <input type="file" id="photo5Upload" accept="image/*">
+                    <span id="photo5Status">Не выбрано</span>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="photo-upload">
+                    <label>Изображение 6 (нижний ряд 3):</label>
+                    <input type="file" id="photo6Upload" accept="image/*">
+                    <span id="photo6Status">Не выбрано</span>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="photo-upload">
+                    <label>Изображение 7 (нижний ряд 4):</label>
+                    <input type="file" id="photo7Upload" accept="image/*">
+                    <span id="photo7Status">Не выбрано</span>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label>Название корабля:</label>
+                <input type="text" id="shipName" placeholder="Введите название">
+            </div>
+
+            <div class="control-section">
+                <label>Нация:</label>
+                <div class="option-with-button">
+                    <select id="nationSelect"></select>
+                    <button class="add-option-btn" onclick="openOptionManager('Нация', 'NATIONS')">+</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label>Уровень:</label>
+                <div class="option-with-button">
+                    <select id="levelSelect"></select>
+                    <button class="add-option-btn" onclick="openOptionManager('Уровень', 'LEVELS')">+</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label>Класс:</label>
+                <div class="option-with-button">
+                    <select id="classSelect"></select>
+                    <button class="add-option-btn" onclick="openOptionManager('Класс', 'CLASSES')">+</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label>Статус:</label>
+                <div class="option-with-button">
+                    <select id="statusSelect"></select>
+                    <button class="add-option-btn" onclick="openOptionManager('Статус', 'STATUSES')">+</button>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <label>Варианты получения:</label>
+                <div class="checkboxes-grid" id="obtainingOptions"></div>
+            </div>
+
+            <div class="control-section">
+                <label>Размер карточки:</label>
+                <select id="outputSize">
+                    <option value="1600x1600">1600x1600</option>
+                    <option value="3200x3200">3200x3200</option>
+                    <option value="4800x4800">4800x4800</option>
+                </select>
+            </div>
+
+            <div class="bottom-controls">
+                <button id="generateBtn" class="generate-btn">Сгенерировать</button>
+                <div id="progressBar" class="progress-bar" style="display: none;">
+                    <div class="progress-bar-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel - Preview and Settings -->
+        <div class="preview-panel">
+            <div class="preview-container" id="previewContainer">
+                <div id="previewText" class="preview-placeholder">Загрузите фото для начала предпросмотра</div>
+                <canvas id="previewCanvas" style="display: none;"></canvas>
+            </div>
+
+            <div class="tabs-container">
+                <div class="tabs-header">
+                    <button class="tab-button active" onclick="switchTab('cardSettings')">Карта</button>
+                    <button class="tab-button" onclick="switchTab('imageSettings')">Главное фото</button>
+                    <button class="tab-button" onclick="switchTab('image1Settings')">Фото 1</button>
+                    <button class="tab-button" onclick="switchTab('image2Settings')">Фото 2</button>
+                    <button class="tab-button" onclick="switchTab('image3Settings')">Фото 3</button>
+                    <button class="tab-button" onclick="switchTab('image4Settings')">Фото 4</button>
+                    <button class="tab-button" onclick="switchTab('image5Settings')">Фото 5</button>
+                    <button class="tab-button" onclick="switchTab('image6Settings')">Фото 6</button>
+                    <button class="tab-button" onclick="switchTab('image7Settings')">Фото 7</button>
+                </div>
+
+                <div class="tab-content active" id="cardSettings">
+                    <div class="slider-control">
+                        <label>Масштаб Карты:</label>
+                        <input type="range" id="cardScale" min="0.1" max="3" step="0.01" value="1">
+                        <span id="cardScaleValue">1.00</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг X Карты:</label>
+                        <input type="range" id="cardXOffset" min="-500" max="500" step="1" value="0">
+                        <span id="cardXOffsetValue">0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг Y Карты:</label>
+                        <input type="range" id="cardYOffset" min="-500" max="500" step="1" value="0">
+                        <span id="cardYOffsetValue">0</span>
+                    </div>
+                    <button class="reset-btn" onclick="resetCardSettings()">Сбросить</button>
+                </div>
+
+                <div class="tab-content" id="imageSettings">
+                    <div class="slider-control">
+                        <label>Масштаб:</label>
+                        <input type="range" id="imageScale" min="0.5" max="5" step="0.01" value="1">
+                        <span id="imageScaleValue">1.00</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг X:</label>
+                        <input type="range" id="imageXOffset" min="-300" max="300" step="1" value="0">
+                        <span id="imageXOffsetValue">0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг Y:</label>
+                        <input type="range" id="imageYOffset" min="-300" max="300" step="1" value="0">
+                        <span id="imageYOffsetValue">0</span>
+                    </div>
+                    <button class="reset-btn" onclick="resetImageSettings()">Сбросить</button>
+                </div>
+
+                <div class="tab-content" id="image1Settings">
+                    <div class="slider-control">
+                        <label>Масштаб:</label>
+                        <input type="range" id="image1Scale" min="0.5" max="5" step="0.01" value="1">
+                        <span id="image1ScaleValue">1.00</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг X:</label>
+                        <input type="range" id="image1XOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image1XOffsetValue">0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг Y:</label>
+                        <input type="range" id="image1YOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image1YOffsetValue">0</span>
+                    </div>
+                    <button class="reset-btn" onclick="resetImage1Settings()">Сбросить</button>
+                </div>
+
+                <div class="tab-content" id="image2Settings">
+                    <div class="slider-control">
+                        <label>Масштаб:</label>
+                        <input type="range" id="image2Scale" min="0.5" max="5" step="0.01" value="1">
+                        <span id="image2ScaleValue">1.00</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг X:</label>
+                        <input type="range" id="image2XOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image2XOffsetValue">0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг Y:</label>
+                        <input type="range" id="image2YOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image2YOffsetValue">0</span>
+                    </div>
+                    <button class="reset-btn" onclick="resetImage2Settings()">Сбросить</button>
+                </div>
+
+                <div class="tab-content" id="image3Settings">
+                    <div class="slider-control">
+                        <label>Масштаб:</label>
+                        <input type="range" id="image3Scale" min="0.5" max="5" step="0.01" value="1">
+                        <span id="image3ScaleValue">1.00</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг X:</label>
+                        <input type="range" id="image3XOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image3XOffsetValue">0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг Y:</label>
+                        <input type="range" id="image3YOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image3YOffsetValue">0</span>
+                    </div>
+                    <button class="reset-btn" onclick="resetImage3Settings()">Сбросить</button>
+                </div>
+
+                <div class="tab-content" id="image4Settings">
+                    <div class="slider-control">
+                        <label>Масштаб:</label>
+                        <input type="range" id="image4Scale" min="0.5" max="5" step="0.01" value="1">
+                        <span id="image4ScaleValue">1.00</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг X:</label>
+                        <input type="range" id="image4XOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image4XOffsetValue">0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг Y:</label>
+                        <input type="range" id="image4YOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image4YOffsetValue">0</span>
+                    </div>
+                    <button class="reset-btn" onclick="resetImage4Settings()">Сбросить</button>
+                </div>
+
+                <div class="tab-content" id="image5Settings">
+                    <div class="slider-control">
+                        <label>Масштаб:</label>
+                        <input type="range" id="image5Scale" min="0.5" max="5" step="0.01" value="1">
+                        <span id="image5ScaleValue">1.00</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг X:</label>
+                        <input type="range" id="image5XOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image5XOffsetValue">0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг Y:</label>
+                        <input type="range" id="image5YOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image5YOffsetValue">0</span>
+                    </div>
+                    <button class="reset-btn" onclick="resetImage5Settings()">Сбросить</button>
+                </div>
+
+                <div class="tab-content" id="image6Settings">
+                    <div class="slider-control">
+                        <label>Масштаб:</label>
+                        <input type="range" id="image6Scale" min="0.5" max="5" step="0.01" value="1">
+                        <span id="image6ScaleValue">1.00</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг X:</label>
+                        <input type="range" id="image6XOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image6XOffsetValue">0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг Y:</label>
+                        <input type="range" id="image6YOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image6YOffsetValue">0</span>
+                    </div>
+                    <button class="reset-btn" onclick="resetImage6Settings()">Сбросить</button>
+                </div>
+
+                <div class="tab-content" id="image7Settings">
+                    <div class="slider-control">
+                        <label>Масштаб:</label>
+                        <input type="range" id="image7Scale" min="0.5" max="5" step="0.01" value="1">
+                        <span id="image7ScaleValue">1.00</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг X:</label>
+                        <input type="range" id="image7XOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image7XOffsetValue">0</span>
+                    </div>
+                    <div class="slider-control">
+                        <label>Сдвиг Y:</label>
+                        <input type="range" id="image7YOffset" min="-300" max="300" step="1" value="0">
+                        <span id="image7YOffsetValue">0</span>
+                    </div>
+                    <button class="reset-btn" onclick="resetImage7Settings()">Сбросить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Option Manager Modal -->
+    <div id="optionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Управление опциями</h2>
+                <button class="close-btn" onclick="closeOptionManager()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="add-option-section">
+                    <label>Добавить новое значение:</label>
+                    <input type="text" id="newOptionInput">
+                    <button onclick="addNewOption()">Добавить</button>
+                </div>
+                <div class="options-list" id="optionsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

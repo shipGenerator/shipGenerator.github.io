@@ -1,0 +1,62 @@
+{
+    "transforms": {
+        "1600x1600": {
+            "card": {
+                "scale": 1.0,
+                "x_offset": 0,
+                "y_offset": 0
+            },
+            "image": {
+                "scale": 1.0,
+                "x_offset": 0,
+                "y_offset": 0
+            }
+        },
+        "3200x3200": {
+            "card": {
+                "scale": 1.0,
+                "x_offset": 0,
+                "y_offset": 0
+            },
+            "image": {
+                "scale": 1.0,
+                "x_offset": 0,
+                "y_offset": 0
+            }
+        },
+        "4800x4800": {
+            "card": {
+                "scale": 1.0,
+                "x_offset": 0,
+                "y_offset": 0
+            },
+            "image": {
+                "scale": 1.0,
+                "x_offset": 0,
+                "y_offset": 0
+            }
+        }
+    },
+    "ship_name": "",
+    "nation": "США",
+    "level": "I",
+    "class": "Эсминец",
+    "status": "Премиум корабль",
+    "output_size": "1600x1600",
+    "obtaining_options": {
+        "Бесплатно": "off",
+        "Кампания": "off",
+        "Серебро": "off",
+        "Дублоны": "off",
+        "Глобальный опыт": "off",
+        "Сталь": "off",
+        "Контейнеры": "off",
+        "Лояльность": "off"
+    },
+    "custom_options": {
+        "NATIONS": [],
+        "LEVELS": [],
+        "CLASSES": [],
+        "STATUSES": []
+    }
+}
