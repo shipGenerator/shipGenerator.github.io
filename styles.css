@@ -223,9 +223,11 @@ body {
 }
 
 #previewCanvas {
-    max-width: 100%;
-    max-height: 100%;
+    max-width: 90%;
+    max-height: 90%;
     object-fit: contain;
+    margin: auto;
+    display: block;
 }
 
 /* Tabs */
@@ -453,14 +455,322 @@ body {
     background: rgba(0, 255, 255, 0.5);
 }
 
-/* Responsive */
+/* Responsive - Tablet */
 @media (max-width: 1200px) {
     .app-container {
         grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
+        grid-template-rows: auto 1fr auto;
+        gap: 15px;
+        padding: 15px;
     }
     
     .controls-panel {
+        max-height: none;
+        min-height: auto;
+    }
+    
+    .preview-panel {
+        order: 2;
+    }
+    
+    .tabs-container {
+        order: 3;
+    }
+}
+
+/* Responsive - Mobile (Portrait) */
+@media (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+    }
+    
+    .app-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        gap: 10px;
+        padding: 10px;
+        height: auto;
+        min-height: 100vh;
+    }
+    
+    /* Controls Panel - Mobile Optimized */
+    .controls-panel {
+        max-height: none;
+        min-height: auto;
+        padding: 15px;
+        overflow-y: visible;
+        position: relative;
+    }
+    
+    .controls-panel h1 {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+    
+    .control-section {
+        margin-bottom: 15px;
+    }
+    
+    .control-section label {
+        font-size: 13px;
+        margin-bottom: 8px;
+    }
+    
+    .control-section input[type="text"],
+    .control-section select {
+        padding: 12px;
+        font-size: 16px; /* Prevents zoom on iOS */
+        min-height: 44px; /* iOS touch target minimum */
+    }
+    
+    /* Photo upload buttons - larger touch targets */
+    .photo-upload input[type="file"] {
+        padding: 10px;
+        font-size: 14px;
+        min-height: 44px;
+    }
+    
+    /* Checkboxes - larger touch targets */
+    .checkboxes-grid {
+        gap: 12px;
+    }
+    
+    .checkbox-item input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+        min-width: 24px;
+        min-height: 24px;
+    }
+    
+    .checkbox-item label {
+        font-size: 14px;
+    }
+    
+    /* Generate button - larger */
+    .generate-btn {
+        padding: 18px;
+        font-size: 18px;
+        min-height: 56px;
+    }
+    
+    /* Preview Panel - Mobile Optimized */
+    .preview-panel {
+        order: 2;
+        min-height: 300px;
         max-height: 50vh;
+    }
+    
+    .preview-container {
+        min-height: 300px;
+    }
+    
+    #previewCanvas {
+        max-width: 95%;
+        max-height: 95%;
+    }
+    
+    /* Tabs Container - Mobile Optimized */
+    .tabs-container {
+        order: 3;
+        padding: 15px;
+    }
+    
+    .tabs-header {
+        gap: 3px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 5px;
+    }
+    
+    .tab-button {
+        padding: 10px 12px;
+        font-size: 11px;
+        white-space: nowrap;
+        flex-shrink: 0;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+    }
+    
+    /* Sliders - Mobile Optimized for Touch */
+    .slider-control {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        margin-bottom: 20px;
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 8px;
+    }
+    
+    .slider-control label {
+        font-size: 13px;
+        font-weight: bold;
+    }
+    
+    /* Slider wrapper for better touch control */
+    .slider-control input[type="range"] {
+        width: 100%;
+        height: 40px; /* Much larger touch area */
+        -webkit-appearance: none;
+        appearance: none;
+        background: transparent;
+        cursor: pointer;
+    }
+    
+    /* Custom slider track for mobile */
+    .slider-control input[type="range"]::-webkit-slider-track {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+    }
+    
+    .slider-control input[type="range"]::-moz-range-track {
+        width: 100%;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+    }
+    
+    /* Custom slider thumb for mobile - much larger */
+    .slider-control input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 28px;
+        height: 28px;
+        background: #00ffff;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 255, 255, 0.5);
+        margin-top: -10px; /* Center on track */
+    }
+    
+    .slider-control input[type="range"]::-moz-range-thumb {
+        width: 28px;
+        height: 28px;
+        background: #00ffff;
+        border-radius: 50%;
+        cursor: pointer;
+        border: 3px solid #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 255, 255, 0.5);
+    }
+    
+    /* Value display - larger and more touch-friendly */
+    .slider-control span,
+    .slider-control input[type="text"] {
+        font-size: 16px;
+        padding: 8px;
+        min-height: 40px;
+        text-align: center;
+        width: 100%;
+    }
+    
+    /* Reset buttons - larger touch targets */
+    .reset-btn {
+        padding: 12px 20px;
+        font-size: 14px;
+        min-height: 44px;
+        margin-top: 15px;
+    }
+    
+    /* Modal - Mobile Optimized */
+    .modal-content {
+        width: 95%;
+        max-width: 95%;
+        max-height: 90vh;
+    }
+    
+    .modal-header h2 {
+        font-size: 16px;
+    }
+    
+    .close-btn {
+        font-size: 32px;
+        padding: 5px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    .modal-body {
+        padding: 15px;
+    }
+    
+    .add-option-section input {
+        padding: 12px;
+        font-size: 16px;
+        min-height: 44px;
+    }
+    
+    .add-option-section button {
+        padding: 12px 20px;
+        font-size: 14px;
+        min-height: 44px;
+    }
+    
+    .option-list-item {
+        padding: 12px;
+    }
+    
+    .option-list-item button {
+        padding: 8px 16px;
+        min-height: 40px;
+    }
+    
+    /* Add option button */
+    .add-option-btn {
+        width: 44px;
+        min-height: 44px;
+        font-size: 20px;
+    }
+}
+
+/* Responsive - Mobile (Landscape) */
+@media (max-width: 768px) and (orientation: landscape) {
+    .app-container {
+        grid-template-columns: 350px 1fr;
+        grid-template-rows: 1fr auto;
+        height: 100vh;
+    }
+    
+    .controls-panel {
+        order: 1;
+        max-height: 100vh;
+        overflow-y: auto;
+    }
+    
+    .preview-panel {
+        order: 2;
+        grid-column: 2;
+        grid-row: 1;
+    }
+    
+    .tabs-container {
+        order: 3;
+        grid-column: 1 / -1;
+        grid-row: 2;
+        max-height: 40vh;
+        overflow-y: auto;
+    }
+}
+
+/* Very small phones */
+@media (max-width: 380px) {
+    .controls-panel h1 {
+        font-size: 16px;
+    }
+    
+    .control-section label {
+        font-size: 12px;
+    }
+    
+    .checkboxes-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .tab-button {
+        font-size: 10px;
+        padding: 8px 10px;
     }
 }

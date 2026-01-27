@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Создание Карточки</title>
+    <title>Генератор Карточек Кораблей</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="app-container">
         <!-- Left Panel - Controls -->
         <div class="controls-panel">
-            <h1>Генератор Карточек</h1>
+            <h1>Генератор Карточек Кораблей</h1>
             
             <div class="control-section">
                 <div class="photo-upload">
@@ -22,7 +22,7 @@
 
             <div class="control-section">
                 <div class="photo-upload">
-                    <label>Изображение 1 (правое Большое):</label>
+                    <label>Изображение 1 (верхнее правое):</label>
                     <input type="file" id="photo1Upload" accept="image/*">
                     <span id="photo1Status">Не выбрано</span>
                 </div>
@@ -30,7 +30,7 @@
 
             <div class="control-section">
                 <div class="photo-upload">
-                    <label>Изображение 2 (правое маленькое 1):</label>
+                    <label>Изображение 2 (правое среднее 1):</label>
                     <input type="file" id="photo2Upload" accept="image/*">
                     <span id="photo2Status">Не выбрано</span>
                 </div>
@@ -38,7 +38,7 @@
 
             <div class="control-section">
                 <div class="photo-upload">
-                    <label>Изображение 3 (правое маленькое 2):</label>
+                    <label>Изображение 3 (правое среднее 2):</label>
                     <input type="file" id="photo3Upload" accept="image/*">
                     <span id="photo3Status">Не выбрано</span>
                 </div>
@@ -127,8 +127,16 @@
                 </select>
             </div>
 
+            <div class="control-section">
+                <label>Шаблон карточки:</label>
+                <select id="templateType">
+                    <option value="new">Новый шаблон (8 изображений)</option>
+                    <option value="old">Старый шаблон (1 изображение)</option>
+                </select>
+            </div>
+
             <div class="bottom-controls">
-                <button id="generateBtn" class="generate-btn">Сгенерировать</button>
+                <button id="generateBtn" class="generate-btn">Сгенерировать финальное изображение</button>
                 <div id="progressBar" class="progress-bar" style="display: none;">
                     <div class="progress-bar-fill"></div>
                 </div>

@@ -15,6 +15,7 @@ const OUTPUT_SIZES = {
 let currentPhoto = null;
 let currentPhotoDataURL = null;
 let logoImage = null;
+let currentTemplateType = 'new'; // 'new' or 'old'
 let additionalPhotos = {
     photo1: null,
     photo2: null,
@@ -32,6 +33,7 @@ let settings = {
     class: CLASSES[0],
     status: STATUSES[0],
     output_size: "1600x1600",
+    template_type: "new",
     obtaining_options: {},
     custom_options: {
         NATIONS: [],
@@ -50,6 +52,8 @@ document.addEventListener('DOMContentLoaded', function() {
     loadSettings();
     setupEventListeners();
     loadLogoImage();
+    // Show template immediately on load
+    updatePreview();
 });
 
 function loadLogoImage() {
@@ -127,6 +131,7 @@ function setupEventListeners() {
     document.getElementById('classSelect').addEventListener('change', triggerPreviewUpdate);
     document.getElementById('statusSelect').addEventListener('change', triggerPreviewUpdate);
     document.getElementById('outputSize').addEventListener('change', handleResolutionChange);
+    document.getElementById('templateType').addEventListener('change', handleTemplateChange);
     
     // Sliders for main image and card - REAL-TIME updates (no debounce)
     const sliders = ['cardScale', 'cardXOffset', 'cardYOffset', 'imageScale', 'imageXOffset', 'imageYOffset',
@@ -237,8 +242,7 @@ function triggerPreviewUpdate() {
 }
 
 function updatePreview() {
-    if (!currentPhoto) return;
-    
+    // Always show template preview, even without main photo
     const canvas = document.getElementById('previewCanvas');
     const ctx = canvas.getContext('2d');
     
@@ -292,12 +296,12 @@ function renderCard(ctx, width, height, isFinal = false) {
 }
 
 function drawBackground(ctx, width, height) {
-    // ⚙️ BACKGROUND BRIGHTNESS CONTROL - Change this number (0.0 to 1.0)
-    const BACKGROUND_BRIGHTNESS = 0.09;  // ← CHANGE: 0.0 = original, 1.0 = much brighter
+    // ⚙️ USER PREFERRED SETTINGS
+    const BACKGROUND_BRIGHTNESS = 0.09;  // ← User's preferred brightness
     
     // ⚙️ BACKGROUND PATTERN CONTROLS
-    const PATTERN_OPACITY = 0.2;        // ← CHANGE: Line/dot pattern transparency (0.0 to 1.0)
-    const PATTERN_LINE_WIDTH = 0.5;      // ← CHANGE: Thickness of lines (0.5 = very thin)
+    const PATTERN_OPACITY = 0.2;        // ← User's preferred pattern transparency
+    const PATTERN_LINE_WIDTH = 0.5;      // ← User's preferred line thickness
     
     // Helper to brighten colors
     function brightenColor(hex, amount) {
@@ -360,6 +364,150 @@ function drawBackground(ctx, width, height) {
 }
 
 function drawCardElements(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, imageY, ratio) {
+    // Route to the appropriate template based on currentTemplateType
+    if (currentTemplateType === 'old') {
+        drawOldTemplateCard(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, imageY, ratio);
+    } else {
+        drawNewTemplateCard(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, imageY, ratio);
+    }
+}
+
+function drawOldTemplateCard(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, imageY, ratio) {
+    // Card background with gradient
+    const gradient = ctx.createLinearGradient(x, y, x + cardWidth, y + cardHeight);
+    gradient.addColorStop(0, '#1a1a1a');
+    gradient.addColorStop(1, '#2d2d2d');
+    ctx.fillStyle = gradient;
+    
+    const borderRadius = 20 * ratio;
+    roundRect(ctx, x, y, cardWidth, cardHeight, borderRadius);
+    ctx.fill();
+    
+    // Card border
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2 * ratio;
+    roundRect(ctx, x, y, cardWidth, cardHeight, borderRadius);
+    ctx.stroke();
+    
+    // Glow effect
+    ctx.shadowColor = 'rgba(0, 255, 255, 0.3)';
+    ctx.shadowBlur = 30 * ratio;
+    roundRect(ctx, x, y, cardWidth, cardHeight, borderRadius);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+    
+    // Top neon line
+    const topLineGradient = ctx.createLinearGradient(x, y, x + cardWidth, y);
+    topLineGradient.addColorStop(0, 'transparent');
+    topLineGradient.addColorStop(0.5, '#00ffff');
+    topLineGradient.addColorStop(1, 'transparent');
+    ctx.strokeStyle = topLineGradient;
+    ctx.lineWidth = 2 * ratio;
+    ctx.beginPath();
+    ctx.moveTo(x + borderRadius, y);
+    ctx.lineTo(x + cardWidth - borderRadius, y);
+    ctx.stroke();
+    
+    // Corner decorations
+    drawCornerDecorations(ctx, x, y, cardWidth, cardHeight, ratio);
+    
+    // Ship image area (centered, single large image)
+    const imageAreaWidth = 450 * ratio;
+    const imageAreaHeight = 253 * ratio;
+    const imageAreaX = x + (cardWidth - imageAreaWidth) / 2;
+    const imageAreaY = y + 25 * ratio;
+    
+    // Image area background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+    roundRect(ctx, imageAreaX, imageAreaY, imageAreaWidth, imageAreaHeight, 15 * ratio);
+    ctx.fill();
+    
+    // Image area border
+    ctx.strokeStyle = 'rgba(0, 255, 255, 0.3)';
+    ctx.lineWidth = 1 * ratio;
+    roundRect(ctx, imageAreaX, imageAreaY, imageAreaWidth, imageAreaHeight, 15 * ratio);
+    ctx.stroke();
+    
+    // Draw ship photo
+    if (currentPhoto) {
+        ctx.save();
+        ctx.beginPath();
+        roundRect(ctx, imageAreaX, imageAreaY, imageAreaWidth, imageAreaHeight, 15 * ratio);
+        ctx.clip();
+        
+        const imgCenterX = imageAreaX + imageAreaWidth / 2;
+        const imgCenterY = imageAreaY + imageAreaHeight / 2;
+        
+        ctx.translate(imgCenterX + imageX, imgCenterY + imageY);
+        ctx.scale(imageScale, imageScale);
+        
+        // Calculate dimensions to preserve aspect ratio
+        const imgAspect = currentPhoto.width / currentPhoto.height;
+        const areaAspect = imageAreaWidth / imageAreaHeight;
+        
+        let drawWidth, drawHeight;
+        if (imgAspect > areaAspect) {
+            // Image is wider - fit to width
+            drawWidth = imageAreaWidth;
+            drawHeight = imageAreaWidth / imgAspect;
+        } else {
+            // Image is taller - fit to height
+            drawHeight = imageAreaHeight;
+            drawWidth = imageAreaHeight * imgAspect;
+        }
+        
+        ctx.drawImage(currentPhoto, -drawWidth / 2, -drawHeight / 2, drawWidth, drawHeight);
+        
+        ctx.restore();
+    }
+    
+    // Ship name overlay gradient
+    const overlayGradient = ctx.createLinearGradient(imageAreaX, imageAreaY + imageAreaHeight - 60 * ratio, imageAreaX, imageAreaY + imageAreaHeight);
+    overlayGradient.addColorStop(0, 'transparent');
+    overlayGradient.addColorStop(0.5, 'rgba(0, 0, 0, 0.7)');
+    overlayGradient.addColorStop(1, 'rgba(0, 0, 0, 0.9)');
+    ctx.fillStyle = overlayGradient;
+    
+    ctx.save();
+    ctx.beginPath();
+    roundRect(ctx, imageAreaX, imageAreaY, imageAreaWidth, imageAreaHeight, 15 * ratio);
+    ctx.clip();
+    ctx.fillRect(imageAreaX, imageAreaY + imageAreaHeight - 60 * ratio, imageAreaWidth, 60 * ratio);
+    ctx.restore();
+    
+    // Ship name text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `bold ${22 * ratio}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0, 255, 255, 0.8)';
+    ctx.shadowBlur = 10 * ratio;
+    const shipName = document.getElementById('shipName').value || ' ';
+    ctx.fillText(shipName, imageAreaX + imageAreaWidth / 2, imageAreaY + imageAreaHeight - 20 * ratio);
+    ctx.shadowBlur = 0;
+    
+    // Info grid
+    const gridY = imageAreaY + imageAreaHeight + 20 * ratio;
+    drawInfoGrid(ctx, x, gridY, cardWidth, ratio);
+    
+    // Status section
+    const statusY = gridY + 80 * ratio;
+    drawStatusSection(ctx, x, statusY, cardWidth, ratio);
+    
+    // Acquisition section
+    const acquisitionY = statusY + 80 * ratio;
+    drawAcquisitionSection(ctx, x, acquisitionY, cardWidth, ratio);
+    
+    // Footer text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = `${15 * ratio}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+    ctx.shadowBlur = 2 * ratio;
+    ctx.fillText('@armada_legends', x + cardWidth / 2, y + cardHeight - 25 * ratio);
+    ctx.shadowBlur = 0;
+}
+
+function drawNewTemplateCard(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, imageY, ratio) {
     /*
     ================================================================================
     SIZING AND POSITIONING GUIDE FOR IMAGE BLOCKS
@@ -389,8 +537,8 @@ function drawCardElements(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, 
     */
     
     // ⚙️ CARD GLOW INTENSITY CONTROL
-    const CARD_GLOW_INTENSITY = 30;  // ← CHANGE: Glow size in pixels (30-100 recommended)
-    const CARD_GLOW_OPACITY = 1;   // ← CHANGE: Glow opacity (0.0 to 1.0)
+    const CARD_GLOW_INTENSITY = 50;  // ← CHANGE: Glow size in pixels (30-100 recommended)
+    const CARD_GLOW_OPACITY = 0.5;   // ← CHANGE: Glow opacity (0.0 to 1.0)
     
     // Card background with gradient
     const gradient = ctx.createLinearGradient(x, y, x + cardWidth, y + cardHeight);
@@ -448,7 +596,7 @@ function drawCardElements(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, 
     const bottomRightMargin = 60 * ratio;      // ← CHANGE: Right margin from border
     
     // Calculate where info grid will be
-    const bottomImageSize = 55 * ratio;
+    const bottomImageSize = 50 * ratio;
     const infoGridY = mainImageY + mainImageHeight + bottomRowTopGap + bottomImageSize + bottomRowBottomGap;
     
     // Center bottom 4 images vertically in the space
@@ -497,8 +645,8 @@ function drawCardElements(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, 
     const rightColumnWidth = (x + cardWidth - 25 * ratio) - rightColumnStartX;
     
     // ⚙️ ADJUSTMENT CONTROLS FOR LOGO:
-    const logoSize = 35 * ratio;               // ← CHANGE: Logo size
-    const logoTopMargin = 40 * ratio;          // ← CHANGE: Distance from card top
+    const logoSize = 35 * ratio;               // ← User's preferred logo size
+    const logoTopMargin = 40 * ratio;          // ← User's preferred distance from top
     
     // Logo positioning (centered in right column)
     const logoX = rightColumnStartX + (rightColumnWidth - logoSize) / 2;
@@ -534,7 +682,7 @@ function drawCardElements(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, 
     // ⚙️ ADJUSTMENT CONTROL FOR RIGHT 3 IMAGES POSITION:
     const rightGroupBottomMargin = 100 * ratio;  // ← CHANGE: Distance from info grid (higher = moves UP)
     
-    // Photos 2 and 3 dimensions
+    // Photos 2 and 3 dimensions - USER PREFERRED SETTINGS
     const smallSquareSize = 40 * ratio;
     const smallGap = 20 * ratio;
     const bottomRightRowWidth = smallSquareSize + smallGap + smallSquareSize;
@@ -542,7 +690,7 @@ function drawCardElements(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, 
     // Calculate position from bottom (above info grid)
     const photo3Y = infoGridY - rightGroupBottomMargin - smallSquareSize;
     
-    // Photo 1 above photos 2&3
+    // Photo 1 above photos 2&3 - USER PREFERRED SETTINGS
     const photo1Size = 55 * ratio;
     const photo1Y = photo3Y - 10 * ratio - photo1Size;
     
@@ -619,7 +767,9 @@ function drawCardElements(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, 
     ctx.shadowBlur = 2 * ratio;
     ctx.fillText('@armada_legends', x + cardWidth / 2, y + cardHeight - 25 * ratio);
     ctx.shadowBlur = 0;
+
 }
+
 
 function drawImageInArea(ctx, image, areaX, areaY, areaWidth, areaHeight, scale, offsetX, offsetY, ratio, imageType) {
     // Area background
@@ -768,7 +918,7 @@ function drawInfoGridWithImages(ctx, x, y, cardWidth, ratio) {
     
     // Draw 4 bottom images
     const imageY = y + itemHeight + 10 * ratio;
-    const imageSize = (cardWidth - 55 * ratio - 30 * ratio) / 4; // 4 images with gaps
+    const imageSize = (cardWidth - 50 * ratio - 30 * ratio) / 4; // 4 images with gaps
     const imageGap = 10 * ratio;
     
     // Photo 4
@@ -1029,6 +1179,12 @@ function handleResolutionChange() {
     triggerPreviewUpdate();
 }
 
+function handleTemplateChange() {
+    currentTemplateType = document.getElementById('templateType').value;
+    saveSettings();
+    updatePreview();
+}
+
 function loadSlidersForResolution() {
     const resolution = document.getElementById('outputSize').value;
     const transforms = settings.transforms[resolution] || {
@@ -1201,6 +1357,7 @@ function saveSettings() {
     settings.class = document.getElementById('classSelect').value;
     settings.status = document.getElementById('statusSelect').value;
     settings.output_size = resolution;
+    settings.template_type = document.getElementById('templateType').value;
     
     settings.obtaining_options = {};
     OBTAINING_OPTIONS.forEach(option => {
@@ -1224,6 +1381,8 @@ function loadSettings() {
     // Apply saved settings
     document.getElementById('shipName').value = settings.ship_name || '';
     document.getElementById('outputSize').value = settings.output_size || '1600x1600';
+    document.getElementById('templateType').value = settings.template_type || 'new';
+    currentTemplateType = settings.template_type || 'new';
     
     if (settings.nation) document.getElementById('nationSelect').value = settings.nation;
     if (settings.level) document.getElementById('levelSelect').value = settings.level;
