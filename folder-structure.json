@@ -1,5 +1,5 @@
 {
-  "командиры": {
+  "Commanders": {
     "Британия": [
       "al-belfast.webp",
       "al-cheshire.webp",
@@ -200,7 +200,7 @@
       "tamon-yamaguchi.webp"
     ]
   },
-  "модули": {
+  "Modules": {
     "1": [
       "aa-guns-mod-2.webp",
       "aiming-systems-mod-1.webp",
