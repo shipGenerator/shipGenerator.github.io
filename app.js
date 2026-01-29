@@ -277,17 +277,21 @@ function renderCard(ctx, width, height, isFinal = false) {
     // Save context state
     ctx.save();
     
-    // Apply card transformations from center
-    ctx.translate(width / 2, height / 2);
-    ctx.translate(cardX, cardY);
-    ctx.scale(cardScale, cardScale);
-    ctx.translate(-width / 2, -height / 2);
-    
-    // Draw card at center
+    // Draw card at center with proper scaling from center
     const baseCardWidth = 500 * ratio;
     const baseCardHeight = 580 * ratio;
-    const cardX_pos = (width - baseCardWidth) / 2 / cardScale;
-    const cardY_pos = (height - baseCardHeight) / 2 / cardScale;
+    
+    // Calculate the center point of the card (where it should be before any transformations)
+    const cardCenterX = width / 2;
+    const cardCenterY = height / 2;
+    
+    // Apply transformations: translate to center, add offset, scale from that point
+    ctx.translate(cardCenterX + cardX, cardCenterY + cardY);
+    ctx.scale(cardScale, cardScale);
+    
+    // Now draw the card centered on the origin (which is now at the scaled center point)
+    const cardX_pos = -baseCardWidth / 2;
+    const cardY_pos = -baseCardHeight / 2;
     
     drawCardElements(ctx, cardX_pos, cardY_pos, baseCardWidth, baseCardHeight, imageScale, imageX, imageY, ratio);
     
@@ -297,11 +301,17 @@ function renderCard(ctx, width, height, isFinal = false) {
 
 function drawBackground(ctx, width, height) {
     // ⚙️ USER PREFERRED SETTINGS
-    const BACKGROUND_BRIGHTNESS = 0.09;  // ← User's preferred brightness
+    const BACKGROUND_BRIGHTNESS = 0.1;  // ← User's preferred brightness
     
     // ⚙️ BACKGROUND PATTERN CONTROLS
-    const PATTERN_OPACITY = 0.2;        // ← User's preferred pattern transparency
-    const PATTERN_LINE_WIDTH = 0.5;      // ← User's preferred line thickness
+    const PATTERN_OPACITY = 0.5;        // ← User's preferred pattern transparency
+    const PATTERN_LINE_WIDTH = 0.7;      // ← User's preferred line thickness
+    
+    // ⚙️ GRADIENT COLOR PRESET - CHANGE THIS NUMBER TO SWITCH GRADIENTS!
+    const GRADIENT_PRESET = 5;  // ← 1, 2, 3, 4, or 5
+    
+    // Calculate scale factor based on canvas size (800 is the preview base size)
+    const scaleFactor = width / 800;
     
     // Helper to brighten colors
     function brightenColor(hex, amount) {
@@ -312,53 +322,178 @@ function drawBackground(ctx, width, height) {
         return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
     }
     
-    // Create gradient background - blue/purple theme
+    // ═══════════════════════════════════════════════════════════════
+    // GRADIENT PRESETS - 5 Different Color Schemes
+    // ═══════════════════════════════════════════════════════════════
+    
+    let gradientColors;
+    
+    if (GRADIENT_PRESET === 1) {
+        // PRESET 1: Steel Ocean (navy blue + cold steel gray)
+        gradientColors = [
+            '#0b1c2d',  // Deep navy
+            '#12324a',  // Battleship blue
+            '#2f4f66',  // Steel blue
+            '#12324a',  // Battleship blue
+            '#0b1c2d'   // Deep navy
+        ];
+    }
+    else if (GRADIENT_PRESET === 2) {
+        // PRESET 2: Sonar Pulse (blue + muted cyan radar glow)
+        gradientColors = [
+            '#081a2b',  // Very dark blue
+            '#0e2f45',  // Ocean blue
+            '#1f5f6b',  // Sonar cyan
+            '#0e2f45',  // Ocean blue
+            '#081a2b'   // Very dark blue
+        ];
+    }
+    else if (GRADIENT_PRESET === 3) {
+        // PRESET 3: Atlantic Storm (blue + stormy green-gray)
+        gradientColors = [
+            '#0c1f2a',  // Storm navy
+            '#183a4a',  // Deep sea blue
+            '#2f5a5a',  // Storm green-gray
+            '#183a4a',  // Deep sea blue
+            '#0c1f2a'   // Storm navy
+        ];
+    }
+    else if (GRADIENT_PRESET === 4) {
+        // PRESET 4: Night Fleet (blue + cold violet accents)
+        gradientColors = [
+            '#0a1528',  // Midnight navy
+            '#162a4a',  // Dark fleet blue
+            '#2a2f5f',  // Cold violet-blue
+            '#162a4a',  // Dark fleet blue
+            '#0a1528'   // Midnight navy
+        ];
+    }
+    else if (GRADIENT_PRESET === 5) {
+        // PRESET 5: Arctic Command (blue + icy desaturated cyan)
+        gradientColors = [
+            '#0d2236',  // Arctic navy
+            '#1a3f5f',  // Cold blue
+            '#3f6f7a',  // Icy cyan
+            '#1a3f5f',  // Cold blue
+            '#0d2236'   // Arctic navy
+        ];
+    }
+
+    else {
+        // Fallback to preset 1
+        gradientColors = ['#1a1a3a', '#1a1a4a', '#1a3a5a', '#1a2a4a', '#1a1a3a'];
+    }
+    
+    // Create gradient background with selected preset
     const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, brightenColor('#1a1a2a', BACKGROUND_BRIGHTNESS));
-    gradient.addColorStop(0.25, brightenColor('#2a1a3a', BACKGROUND_BRIGHTNESS));
-    gradient.addColorStop(0.5, brightenColor('#1a2a3a', BACKGROUND_BRIGHTNESS));
-    gradient.addColorStop(0.75, brightenColor('#2a1a3a', BACKGROUND_BRIGHTNESS));
-    gradient.addColorStop(1, brightenColor('#1a1a2a', BACKGROUND_BRIGHTNESS));
+    gradient.addColorStop(0, brightenColor(gradientColors[0], BACKGROUND_BRIGHTNESS));
+    gradient.addColorStop(0.25, brightenColor(gradientColors[1], BACKGROUND_BRIGHTNESS));
+    gradient.addColorStop(0.5, brightenColor(gradientColors[2], BACKGROUND_BRIGHTNESS));
+    gradient.addColorStop(0.75, brightenColor(gradientColors[3], BACKGROUND_BRIGHTNESS));
+    gradient.addColorStop(1, brightenColor(gradientColors[4], BACKGROUND_BRIGHTNESS));
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
     
-    // Add decorative line patterns
+    // Add chaotic decorative line patterns
     ctx.save();
-    ctx.strokeStyle = `rgba(100, 150, 255, ${PATTERN_OPACITY})`;
-    ctx.lineWidth = PATTERN_LINE_WIDTH;
+    ctx.lineWidth = PATTERN_LINE_WIDTH * scaleFactor;  // ← SCALED!
     
-    // Diagonal lines pattern 1
-    for (let i = -height; i < width + height; i += 90) {
+    // Seeded random for consistent pattern
+    let seed = 12345;
+    function seededRandom() {
+        seed = (seed * 9301 + 49297) % 233280;
+        return seed / 233280;
+    }
+    
+    // Chaotic angular lines scattered across canvas
+    const lineCount = 80;
+    for (let i = 0; i < lineCount; i++) {
+        const startX = seededRandom() * width;
+        const startY = seededRandom() * height;
+        const angle = seededRandom() * Math.PI * 2;
+        const length = (50 + seededRandom() * 200) * scaleFactor;  // ← SCALED!
+        const opacity = PATTERN_OPACITY * (0.3 + seededRandom() * 0.7);
+        
+        ctx.strokeStyle = `rgba(100, 150, 255, ${opacity})`;
         ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i + height, height);
+        ctx.moveTo(startX, startY);
+        ctx.lineTo(startX + Math.cos(angle) * length, startY + Math.sin(angle) * length);
         ctx.stroke();
     }
     
-    // Diagonal lines pattern 2 (opposite direction)
-    ctx.strokeStyle = `rgba(80, 140, 255, ${PATTERN_OPACITY * 0.7})`;
-    for (let i = 0; i < width + height; i += 135) {
+    // Sharp geometric fragments - triangles and angular shapes
+    const fragmentCount = 25;
+    for (let i = 0; i < fragmentCount; i++) {
+        const centerX = seededRandom() * width;
+        const centerY = seededRandom() * height;
+        const size = (20 + seededRandom() * 60) * scaleFactor;  // ← SCALED!
+        const rotation = seededRandom() * Math.PI * 2;
+        const sides = Math.floor(seededRandom() * 2) + 3; // 3 or 4 sides
+        const opacity = PATTERN_OPACITY * (0.2 + seededRandom() * 0.5);
+        
+        ctx.strokeStyle = `rgba(80, 140, 255, ${opacity})`;
         ctx.beginPath();
-        ctx.moveTo(i, 0);
-        ctx.lineTo(i - height, height);
+        
+        for (let j = 0; j <= sides; j++) {
+            const angle = rotation + (j / sides) * Math.PI * 2;
+            const x = centerX + Math.cos(angle) * size;
+            const y = centerY + Math.sin(angle) * size;
+            if (j === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
         ctx.stroke();
     }
     
-    // Scattered dots pattern
+    // Scattered angled cross marks
+    const crossCount = 35;
+    for (let i = 0; i < crossCount; i++) {
+        const x = seededRandom() * width;
+        const y = seededRandom() * height;
+        const size = (8 + seededRandom() * 25) * scaleFactor;  // ← SCALED!
+        const angle = seededRandom() * Math.PI / 4; // Varying angles
+        const opacity = PATTERN_OPACITY * (0.4 + seededRandom() * 0.6);
+        
+        ctx.strokeStyle = `rgba(120, 160, 255, ${opacity})`;
+        
+        // First line of cross
+        ctx.beginPath();
+        ctx.moveTo(x - Math.cos(angle) * size, y - Math.sin(angle) * size);
+        ctx.lineTo(x + Math.cos(angle) * size, y + Math.sin(angle) * size);
+        ctx.stroke();
+        
+        // Second line of cross (perpendicular)
+        ctx.beginPath();
+        ctx.moveTo(x - Math.cos(angle + Math.PI/2) * size, y - Math.sin(angle + Math.PI/2) * size);
+        ctx.lineTo(x + Math.cos(angle + Math.PI/2) * size, y + Math.sin(angle + Math.PI/2) * size);
+        ctx.stroke();
+    }
+    
+    // Thin connecting lines between random points
+    const connectCount = 15;
+    const points = [];
+    for (let i = 0; i < connectCount; i++) {
+        points.push({x: seededRandom() * width, y: seededRandom() * height});
+    }
+    
+    ctx.strokeStyle = `rgba(90, 145, 255, ${PATTERN_OPACITY * 0.3})`;
+    for (let i = 0; i < connectCount - 1; i++) {
+        if (seededRandom() > 0.6) { // Only connect some points
+            ctx.beginPath();
+            ctx.moveTo(points[i].x, points[i].y);
+            ctx.lineTo(points[i + 1].x, points[i + 1].y);
+            ctx.stroke();
+        }
+    }
+    
+    // Small scattered dots at intersections
     ctx.fillStyle = `rgba(100, 150, 255, ${PATTERN_OPACITY * 1.2})`;
-    const dotPositions = [
-        [0.23, 0.47], [0.67, 0.23], [0.89, 0.67], [0.12, 0.78],
-        [0.45, 0.89], [0.78, 0.12], [0.34, 0.56], [0.91, 0.34],
-        [0.15, 0.91], [0.56, 0.15], [0.73, 0.82], [0.28, 0.37]
-    ];
-    
-    dotPositions.forEach(([xPercent, yPercent]) => {
-        const x = width * xPercent;
-        const y = height * yPercent;
+    for (let i = 0; i < 40; i++) {
+        const x = seededRandom() * width;
+        const y = seededRandom() * height;
         ctx.beginPath();
-        ctx.arc(x, y, 1, 0, Math.PI * 2);
+        ctx.arc(x, y, 0.8 * scaleFactor, 0, Math.PI * 2);  // ← SCALED!
         ctx.fill();
-    });
+    }
     
     ctx.restore();
 }
@@ -373,18 +508,52 @@ function drawCardElements(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, 
 }
 
 function drawOldTemplateCard(ctx, x, y, cardWidth, cardHeight, imageScale, imageX, imageY, ratio) {
-    // Card background with gradient
-    const gradient = ctx.createLinearGradient(x, y, x + cardWidth, y + cardHeight);
-    gradient.addColorStop(0, '#1a1a1a');
-    gradient.addColorStop(1, '#2d2d2d');
-    ctx.fillStyle = gradient;
-    
     const borderRadius = 20 * ratio;
+    
+    // Enhanced card background with blue-tinted gradient (BRIGHTER)
+    const gradient = ctx.createLinearGradient(x, y, x + cardWidth, y + cardHeight);
+    gradient.addColorStop(0, '#15152a');      // Brighter dark blue
+    gradient.addColorStop(0.5, '#1f1f32');    // Brighter blue-gray
+    gradient.addColorStop(1, '#252538');      // Brighter lighter blue-gray
+    ctx.fillStyle = gradient;
     roundRect(ctx, x, y, cardWidth, cardHeight, borderRadius);
     ctx.fill();
     
+    // Add subtle radial glow from center (STRONGER)
+    const centerX = x + cardWidth / 2;
+    const centerY = y + cardHeight / 2;
+    const radialGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, cardWidth * 0.6);
+    radialGradient.addColorStop(0, 'rgba(30, 50, 90, 0.4)');
+    radialGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = radialGradient;
+    roundRect(ctx, x, y, cardWidth, cardHeight, borderRadius);
+    ctx.fill();
+    
+    // Add subtle tech grid pattern overlay (LARGER SPACING)
+    ctx.save();
+    ctx.strokeStyle = 'rgba(40, 80, 120, 0.15)';
+    ctx.lineWidth = 0.5 * ratio;
+    const gridSize = 60 * ratio;  // ← LARGER GRID (was 30)
+    
+    // Vertical lines
+    for (let i = x; i < x + cardWidth; i += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(i, y);
+        ctx.lineTo(i, y + cardHeight);
+        ctx.stroke();
+    }
+    
+    // Horizontal lines
+    for (let j = y; j < y + cardHeight; j += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, j);
+        ctx.lineTo(x + cardWidth, j);
+        ctx.stroke();
+    }
+    ctx.restore();
+    
     // Card border
-    ctx.strokeStyle = '#333';
+    ctx.strokeStyle = '#2a3a50';
     ctx.lineWidth = 2 * ratio;
     roundRect(ctx, x, y, cardWidth, cardHeight, borderRadius);
     ctx.stroke();
@@ -538,20 +707,54 @@ function drawNewTemplateCard(ctx, x, y, cardWidth, cardHeight, imageScale, image
     
     // ⚙️ CARD GLOW INTENSITY CONTROL
     const CARD_GLOW_INTENSITY = 50;  // ← CHANGE: Glow size in pixels (30-100 recommended)
-    const CARD_GLOW_OPACITY = 0.5;   // ← CHANGE: Glow opacity (0.0 to 1.0)
-    
-    // Card background with gradient
-    const gradient = ctx.createLinearGradient(x, y, x + cardWidth, y + cardHeight);
-    gradient.addColorStop(0, '#1a1a1a');
-    gradient.addColorStop(1, '#2d2d2d');
-    ctx.fillStyle = gradient;
+    const CARD_GLOW_OPACITY = 0.4;   // ← CHANGE: Glow opacity (0.0 to 1.0)
     
     const borderRadius = 20 * ratio;
+    
+    // Enhanced card background with blue-tinted gradient (BRIGHTER)
+    const gradient = ctx.createLinearGradient(x, y, x + cardWidth, y + cardHeight);
+    gradient.addColorStop(0, '#15152a');      // Brighter dark blue
+    gradient.addColorStop(0.5, '#1f1f32');    // Brighter blue-gray
+    gradient.addColorStop(1, '#252538');      // Brighter lighter blue-gray
+    ctx.fillStyle = gradient;
     roundRect(ctx, x, y, cardWidth, cardHeight, borderRadius);
     ctx.fill();
     
+    // Add subtle radial glow from center (STRONGER)
+    const centerX = x + cardWidth / 2;
+    const centerY = y + cardHeight / 2;
+    const radialGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, cardWidth * 0.6);
+    radialGradient.addColorStop(0, 'rgba(30, 50, 90, 0.4)');
+    radialGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = radialGradient;
+    roundRect(ctx, x, y, cardWidth, cardHeight, borderRadius);
+    ctx.fill();
+    
+    // Add subtle tech grid pattern overlay (LARGER SPACING)
+    ctx.save();
+    ctx.strokeStyle = 'rgba(40, 80, 120, 0.15)';
+    ctx.lineWidth = 0.5 * ratio;
+    const gridSize = 60 * ratio;  // ← LARGER GRID (was 30)
+    
+    // Vertical lines
+    for (let i = x; i < x + cardWidth; i += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(i, y);
+        ctx.lineTo(i, y + cardHeight);
+        ctx.stroke();
+    }
+    
+    // Horizontal lines
+    for (let j = y; j < y + cardHeight; j += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(x, j);
+        ctx.lineTo(x + cardWidth, j);
+        ctx.stroke();
+    }
+    ctx.restore();
+    
     // Card border
-    ctx.strokeStyle = '#333';
+    ctx.strokeStyle = '#2a3a50';
     ctx.lineWidth = 2 * ratio;
     roundRect(ctx, x, y, cardWidth, cardHeight, borderRadius);
     ctx.stroke();
@@ -559,7 +762,7 @@ function drawNewTemplateCard(ctx, x, y, cardWidth, cardHeight, imageScale, image
     // Glow effect with adjustable intensity
     ctx.shadowColor = `rgba(0, 255, 255, ${CARD_GLOW_OPACITY})`;
     ctx.shadowBlur = CARD_GLOW_INTENSITY * ratio;
-    ctx.strokeStyle = '#333';
+    ctx.strokeStyle = '#2a3a50';
     ctx.lineWidth = 2 * ratio;
     roundRect(ctx, x, y, cardWidth, cardHeight, borderRadius);
     ctx.stroke();

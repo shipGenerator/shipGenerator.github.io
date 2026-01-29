@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Генератор Карточек Кораблей</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="file-browser-styles.css">
 </head>
 <body>
     <div class="app-container">
@@ -15,7 +16,10 @@
             <div class="control-section">
                 <div class="photo-upload">
                     <label>Фото корабля (главное):</label>
-                    <input type="file" id="photoUpload" accept="image/*">
+                    <div class="custom-file-input-container">
+                        <button class="browse-btn" onclick="openFileBrowserFor('photoUpload', 'main')">📂 Из папок</button>
+                        <input type="file" id="photoUpload" accept="image/*" style="flex: 1;">
+                    </div>
                     <span id="photoStatus">Не выбрано</span>
                 </div>
             </div>
@@ -23,7 +27,10 @@
             <div class="control-section">
                 <div class="photo-upload">
                     <label>Изображение 1 (верхнее правое):</label>
-                    <input type="file" id="photo1Upload" accept="image/*">
+                    <div class="custom-file-input-container">
+                        <button class="browse-btn" onclick="openFileBrowserFor('photo1Upload', 'photo1')">📂 Из папок</button>
+                        <input type="file" id="photo1Upload" accept="image/*" style="flex: 1;">
+                    </div>
                     <span id="photo1Status">Не выбрано</span>
                 </div>
             </div>
@@ -31,7 +38,10 @@
             <div class="control-section">
                 <div class="photo-upload">
                     <label>Изображение 2 (правое среднее 1):</label>
-                    <input type="file" id="photo2Upload" accept="image/*">
+                    <div class="custom-file-input-container">
+                        <button class="browse-btn" onclick="openFileBrowserFor('photo2Upload', 'photo2')">📂 Из папок</button>
+                        <input type="file" id="photo2Upload" accept="image/*" style="flex: 1;">
+                    </div>
                     <span id="photo2Status">Не выбрано</span>
                 </div>
             </div>
@@ -39,7 +49,10 @@
             <div class="control-section">
                 <div class="photo-upload">
                     <label>Изображение 3 (правое среднее 2):</label>
-                    <input type="file" id="photo3Upload" accept="image/*">
+                    <div class="custom-file-input-container">
+                        <button class="browse-btn" onclick="openFileBrowserFor('photo3Upload', 'photo3')">📂 Из папок</button>
+                        <input type="file" id="photo3Upload" accept="image/*" style="flex: 1;">
+                    </div>
                     <span id="photo3Status">Не выбрано</span>
                 </div>
             </div>
@@ -47,7 +60,10 @@
             <div class="control-section">
                 <div class="photo-upload">
                     <label>Изображение 4 (нижний ряд 1):</label>
-                    <input type="file" id="photo4Upload" accept="image/*">
+                    <div class="custom-file-input-container">
+                        <button class="browse-btn" onclick="openFileBrowserFor('photo4Upload', 'photo4')">📂 Из папок</button>
+                        <input type="file" id="photo4Upload" accept="image/*" style="flex: 1;">
+                    </div>
                     <span id="photo4Status">Не выбрано</span>
                 </div>
             </div>
@@ -55,7 +71,10 @@
             <div class="control-section">
                 <div class="photo-upload">
                     <label>Изображение 5 (нижний ряд 2):</label>
-                    <input type="file" id="photo5Upload" accept="image/*">
+                    <div class="custom-file-input-container">
+                        <button class="browse-btn" onclick="openFileBrowserFor('photo5Upload', 'photo5')">📂 Из папок</button>
+                        <input type="file" id="photo5Upload" accept="image/*" style="flex: 1;">
+                    </div>
                     <span id="photo5Status">Не выбрано</span>
                 </div>
             </div>
@@ -63,7 +82,10 @@
             <div class="control-section">
                 <div class="photo-upload">
                     <label>Изображение 6 (нижний ряд 3):</label>
-                    <input type="file" id="photo6Upload" accept="image/*">
+                    <div class="custom-file-input-container">
+                        <button class="browse-btn" onclick="openFileBrowserFor('photo6Upload', 'photo6')">📂 Из папок</button>
+                        <input type="file" id="photo6Upload" accept="image/*" style="flex: 1;">
+                    </div>
                     <span id="photo6Status">Не выбрано</span>
                 </div>
             </div>
@@ -71,7 +93,10 @@
             <div class="control-section">
                 <div class="photo-upload">
                     <label>Изображение 7 (нижний ряд 4):</label>
-                    <input type="file" id="photo7Upload" accept="image/*">
+                    <div class="custom-file-input-container">
+                        <button class="browse-btn" onclick="openFileBrowserFor('photo7Upload', 'photo7')">📂 Из папок</button>
+                        <input type="file" id="photo7Upload" accept="image/*" style="flex: 1;">
+                    </div>
                     <span id="photo7Status">Не выбрано</span>
                 </div>
             </div>
@@ -356,5 +381,55 @@
     </div>
 
     <script src="app.js"></script>
+</body>
+</html>
+    <!-- File Browser Modal -->
+    <div id="fileBrowserModal">
+        <div class="file-browser-container">
+            <div class="file-browser-header">
+                <div class="file-browser-title">📁 Выбрать изображение из папок</div>
+                <button class="file-browser-close" onclick="fileBrowser.close()">&times;</button>
+            </div>
+            
+            <div class="file-browser-navigation">
+                <button class="nav-btn" id="backBtn" onclick="fileBrowser.goBack()">⬅ Назад</button>
+                <div class="file-browser-breadcrumb" id="fileBrowserBreadcrumb">Главная</div>
+            </div>
+            
+            <div class="file-browser-body">
+                <div id="fileBrowserContent"></div>
+            </div>
+            
+            <div class="file-browser-footer">
+                <button class="device-browser-btn" onclick="fileBrowser.openDeviceBrowser()">📱 Обзор устройства</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="file-browser.js"></script>
+    <script src="app.js"></script>
+    <script>
+        // Global function to open file browser for specific input
+        let currentInputId = null;
+        let currentPhotoType = null;
+
+        function openFileBrowserFor(inputId, photoType) {
+            currentInputId = inputId;
+            currentPhotoType = photoType;
+            
+            fileBrowser.open(function(imageData) {
+                if (imageData === null) {
+                    // User wants to use device browser
+                    document.getElementById(currentInputId).click();
+                } else {
+                    // User selected an image from the file browser
+                    // Create a File object from the blob
+                    const file = new File([imageData.blob], imageData.name, { type: imageData.blob.type });
+                    const event = { target: { files: [file] } };
+                    handlePhotoUpload(event, currentPhotoType);
+                }
+            });
+        }
+    </script>
 </body>
 </html>
