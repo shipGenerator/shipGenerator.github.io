@@ -84,7 +84,10 @@ class FileBrowser {
 
     // Get the actual file path for an image
     getImagePath(filename) {
-        return this.basePath + this.currentPath.join('/') + '/' + filename;
+        // Encode each path segment to handle Cyrillic characters properly
+        const encodedPath = this.currentPath.map(segment => encodeURIComponent(segment)).join('/');
+        const encodedFilename = encodeURIComponent(filename);
+        return this.basePath + encodedPath + '/' + encodedFilename;
     }
 
     // Render the browser UI
@@ -149,13 +152,33 @@ class FileBrowser {
             
             const imageDiv = document.createElement('div');
             imageDiv.className = 'file-browser-image';
-            imageDiv.innerHTML = `
-                <img src="${imagePath}" alt="${filename}" onerror="this.parentElement.style.display='none'">
-                <div class="image-name">${filename}</div>
-                <div class="image-actions">
-                    <button class="select-btn" onclick="fileBrowser.selectImage('${filename}')">Выбрать</button>
-                </div>
-            `;
+            
+            // Create image element
+            const img = document.createElement('img');
+            img.src = imagePath;
+            img.alt = filename;
+            img.onerror = function() { this.parentElement.style.display = 'none'; };
+            
+            // Create name div
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'image-name';
+            nameDiv.textContent = filename;
+            
+            // Create actions div
+            const actionsDiv = document.createElement('div');
+            actionsDiv.className = 'image-actions';
+            
+            // Create select button
+            const selectBtn = document.createElement('button');
+            selectBtn.className = 'select-btn';
+            selectBtn.textContent = 'Выбрать';
+            selectBtn.onclick = () => this.selectImage(filename);
+            
+            actionsDiv.appendChild(selectBtn);
+            imageDiv.appendChild(img);
+            imageDiv.appendChild(nameDiv);
+            imageDiv.appendChild(actionsDiv);
+            
             imagesGrid.appendChild(imageDiv);
         });
     }
