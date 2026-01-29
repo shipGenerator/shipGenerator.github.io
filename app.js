@@ -1391,11 +1391,11 @@ function handleTemplateChange() {
 function loadSlidersForResolution() {
     const resolution = document.getElementById('outputSize').value;
     const transforms = settings.transforms[resolution] || {
-        card: { scale: 1.0, x_offset: 0, y_offset: 0 },
+        card: { scale: 1.3, x_offset: 0, y_offset: 0 },
         image: { scale: 1.0, x_offset: 0, y_offset: 0 },
-        image1: { scale: 1.0, x_offset: 0, y_offset: 0 },
-        image2: { scale: 1.0, x_offset: 0, y_offset: 0 },
-        image3: { scale: 1.0, x_offset: 0, y_offset: 0 },
+        image1: { scale: 2.9, x_offset: 0, y_offset: 40 },
+        image2: { scale: 2.9, x_offset: 0, y_offset: 40 },
+        image3: { scale: 2.9, x_offset: 0, y_offset: 40 },
         image4: { scale: 1.0, x_offset: 0, y_offset: 0 },
         image5: { scale: 1.0, x_offset: 0, y_offset: 0 },
         image6: { scale: 1.0, x_offset: 0, y_offset: 0 },
@@ -1435,7 +1435,7 @@ function loadSlidersForResolution() {
 }
 
 function resetCardSettings() {
-    document.getElementById('cardScale').value = 1.0;
+    document.getElementById('cardScale').value = 1.3;
     document.getElementById('cardXOffset').value = 0;
     document.getElementById('cardYOffset').value = 0;
     updateSliderValue('cardScale');
@@ -1455,9 +1455,9 @@ function resetImageSettings() {
 }
 
 function resetImage1Settings() {
-    document.getElementById('image1Scale').value = 1.0;
+    document.getElementById('image1Scale').value = 2.9;
     document.getElementById('image1XOffset').value = 0;
-    document.getElementById('image1YOffset').value = 0;
+    document.getElementById('image1YOffset').value = 40;
     updateSliderValue('image1Scale');
     updateSliderValue('image1XOffset');
     updateSliderValue('image1YOffset');
@@ -1465,9 +1465,9 @@ function resetImage1Settings() {
 }
 
 function resetImage2Settings() {
-    document.getElementById('image2Scale').value = 1.0;
+    document.getElementById('image2Scale').value = 2.9;
     document.getElementById('image2XOffset').value = 0;
-    document.getElementById('image2YOffset').value = 0;
+    document.getElementById('image2YOffset').value = 40;
     updateSliderValue('image2Scale');
     updateSliderValue('image2XOffset');
     updateSliderValue('image2YOffset');
@@ -1475,9 +1475,9 @@ function resetImage2Settings() {
 }
 
 function resetImage3Settings() {
-    document.getElementById('image3Scale').value = 1.0;
+    document.getElementById('image3Scale').value = 2.9;
     document.getElementById('image3XOffset').value = 0;
-    document.getElementById('image3YOffset').value = 0;
+    document.getElementById('image3YOffset').value = 40;
     updateSliderValue('image3Scale');
     updateSliderValue('image3XOffset');
     updateSliderValue('image3YOffset');
